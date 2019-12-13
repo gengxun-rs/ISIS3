@@ -127,7 +127,7 @@ node("${env.OS.toLowerCase()}") {
                                     export ISISROOT=${env.ISISROOT}
                                     export ISIS3TESTDATA="/isisData/testData"
                                     export ISIS3DATA="/isisData/data"
-                                    export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda3/envs/isis/bin:$PATH
+                                    export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
 
                                     automos -HELP
                                     catlab -HELP
@@ -158,7 +158,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda3/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -187,7 +187,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda3/env/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/env/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -216,7 +216,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda3/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
 
                             ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
