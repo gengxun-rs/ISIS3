@@ -68,7 +68,7 @@ node("${env.OS.toLowerCase()}") {
           conda_path = pwd() + "/miniconda"
           sh '''
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p ${conda_path}/miniconda
+            bash miniconda.sh -b -p ${conda_path}
           '''
         } else {
           conda_path = "/home/jenkins/.conda/"
