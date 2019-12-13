@@ -65,21 +65,23 @@ node("${env.OS.toLowerCase()}") {
     stage("Create environment") {
         env.STAGE_STATUS = "Creating conda environment"
         if (env.OS.toLowerCase() == "mac") {
+          conda_path = pwd() + "/miniconda"
           sh '''
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p $WORKSPACE/miniconda
+            bash miniconda.sh -b -p ${conda_path}/miniconda
           '''
+        } else {
+          conda_path = "/home/jenkins/.conda/"
         }
 
         sh '''
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH=$WORKSPACE/bin:$PATH
+            export PATH=${conda_path}/bin:$PATH
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
             conda config --set ssl_verify false 
-            conda clean --all
             conda create -n isis python=3
         '''
 
@@ -126,7 +128,7 @@ node("${env.OS.toLowerCase()}") {
                                     export ISISROOT=${env.ISISROOT}
                                     export ISIS3TESTDATA="/isisData/testData"
                                     export ISIS3DATA="/isisData/data"
-                                    export PATH=`pwd`/../install/bin:/home/jenkins/.conda/envs/isis/bin:$PATH
+                                    export PATH=`pwd`/../install/bin:${conda_path}/envs/isis/bin:$PATH
 
                                     automos -HELP
                                     catlab -HELP
@@ -157,7 +159,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:/home/jenkins/.conda/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${conda_path}/envs/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -186,7 +188,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:/home/jenkins/.conda/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${conda_path}/env/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -215,7 +217,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:/home/jenkins/.conda/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${conda_path}/envs/isis/bin:$PATH
 
                             ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
