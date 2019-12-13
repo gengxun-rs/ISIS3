@@ -67,14 +67,14 @@ node("${env.OS.toLowerCase()}") {
         if (env.OS.toLowerCase() == "mac") {
           sh '''
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p ${env.WORKSPACE}/miniconda
+            bash miniconda.sh -b -p $WORKSPACE/miniconda
           '''
         }
 
         sh '''
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH=${env.WORKSPACE}/bin:$PATH
+            export PATH=$WORKSPACE/bin:$PATH
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
