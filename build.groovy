@@ -64,9 +64,18 @@ node("${env.OS.toLowerCase()}") {
 
     stage("Create environment") {
         env.STAGE_STATUS = "Creating conda environment"
+        if (env.OS.toLowerCase() == "mac") {
+          sh '''
+            curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+            bash miniconda.sh -b -p miniconda
+            export PATH="$PWD/miniconda/bin:$PATH"
+          '''
+        }
+
         sh '''
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
+            which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
             conda config --set ssl_verify false 
