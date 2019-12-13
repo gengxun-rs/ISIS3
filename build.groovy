@@ -70,6 +70,7 @@ node("${env.OS.toLowerCase()}") {
             conda search -c conda-forge ale  
             conda config --set always_yes True
             conda config --set ssl_verify false 
+            conda clean --all
             conda create -n isis python=3
         '''
 
