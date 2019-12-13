@@ -76,7 +76,7 @@ node("${env.OS.toLowerCase()}") {
         sh '''
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH=$WORKSPACE/miniconda3/bin:$PATH
+            export PATH=$WORKSPACE/miniconda/bin:$PATH
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
