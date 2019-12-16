@@ -80,7 +80,7 @@ node("${env.OS.toLowerCase()}") {
         sh """
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH=${macOSMinicondaDir}:$PATH
+            export PATH="${macOSMinicondaDir}:${env.PATH}"
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
@@ -162,7 +162,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${PATH}
+                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
