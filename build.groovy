@@ -72,7 +72,7 @@ node("${env.OS.toLowerCase()}") {
         
         env.STAGE_STATUS = "Creating conda environment"
         if (env.OS.toLowerCase() == "mac") {
-          macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true)
+          macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5 | tr -d "\n"', returnStdout: true)
           macOSMinicondaDir = "/tmp/$macOSEnvHash"
           macOSMinicondaBin = "$macOSMinicondaDir/bin"
 
