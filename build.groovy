@@ -73,7 +73,7 @@ node("${env.OS.toLowerCase()}") {
           macOSMinicondaDir = "/tmp/" + sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true) + "/miniconda"
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p ${macOsMinicondaDir}
+            bash miniconda.sh -b -p ${macOSMinicondaDir}
           """
         }
 
