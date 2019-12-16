@@ -75,8 +75,10 @@ node("${env.OS.toLowerCase()}") {
           macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true)
           macOSMinicondaDir = "/tmp/" + macOSEnvHash
           macOSMinicondaBin = macOSMinicondaDir + "/bin"
-          
-          println(macOSMinocondaBin)
+          macOSMinocondaDir.replaceAll("\\s","")
+          macOSMinicondaBin.replaceAll("\\s","")
+
+          println(macOSMinicondaBin)
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             bash miniconda.sh -b -p ${macOSMinicondaDir}
@@ -87,10 +89,10 @@ node("${env.OS.toLowerCase()}") {
             export PATH="${macOSMinicondaBin}:${env.PATH}"
             echo $PATH
             which conda
-            ${macOSMinicondaBin}/conda search -c conda-forge ale  
-            ${macOSMinicondaBin}/conda config --set always_yes True
-            ${macOSMinicondaBin}/conda config --set ssl_verify false 
-            ${macOSMinicondaBin}/conda create -n isis python=3
+            conda search -c conda-forge ale  
+            conda config --set always_yes True
+            conda config --set ssl_verify false 
+            conda create -n isis python=3
             """
         } else {
          sh """
@@ -119,7 +121,7 @@ node("${env.OS.toLowerCase()}") {
                 stage ("Build") {
                     env.STAGE_STATUS = "Building ISIS on ${env.OS}"
                     sh """
-                        source activate isis
+                        source activate ${macOSMinocondaDir}/envs/isis
                         echo `ls ../`
                         echo `pwd`
                         conda list
