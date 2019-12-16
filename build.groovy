@@ -76,7 +76,6 @@ node("${env.OS.toLowerCase()}") {
           macOSMinicondaDir = "/tmp/$macOSEnvHash"
           macOSMinicondaBin = "$macOSMinicondaDir/bin"
 
-          println(macOSMinicondaBin)
           println(macOSMinicondaDir)
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
@@ -100,18 +99,25 @@ node("${env.OS.toLowerCase()}") {
             export PATH="${macOSMinicondaBin}:${env.PATH}"
             echo $PATH
             which conda
-            ${macOSMinicondaBin}/conda search -c conda-forge ale  
-            ${macOSMinicondaBin}/conda config --set always_yes True
-            ${macOSMinicondaBin}/conda config --set ssl_verify false 
-            ${macOSMinicondaBin}/conda create -n isis python=3
+            conda search -c conda-forge ale  
+            conda config --set always_yes True
+            conda config --set ssl_verify false 
+            conda create -n isis python=3
         """
         }
 
-               if (env.OS.toLowerCase() == "centos") {
+        if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
         } else {
-            sh 'conda env update -n isis -f environment.yml --prune'
+          sh """
+            export PATH="${macOSMinicondaBin}:${env.PATH}"
+            conda env update -n isis -f environment.yml --prune
+          """
         }
+    }
+    
+    environment {
+      PATH = "${macOSMinocondaBin}:${env.PATH}"
     }
 
     withEnv(isisEnv) {
