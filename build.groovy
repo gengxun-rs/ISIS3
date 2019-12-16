@@ -71,13 +71,13 @@ node("${env.OS.toLowerCase()}") {
         env.STAGE_STATUS = "Creating conda environment"
         if (env.OS.toLowerCase() == "mac") {
           macOSMinicondaDir = "/tmp/" + sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true) + "/miniconda"
-          sh '''
+          sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             bash miniconda.sh -b -p ${macOsMinicondaDir}
-          '''
+          """
         }
 
-        sh '''
+        sh """
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
             export PATH=${MacOSMinicondaDir}:$PATH
@@ -86,7 +86,7 @@ node("${env.OS.toLowerCase()}") {
             conda config --set always_yes True
             conda config --set ssl_verify false 
             conda create -n isis python=3
-        '''
+        """
 
         if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
