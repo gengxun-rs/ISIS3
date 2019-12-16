@@ -11,6 +11,7 @@ def kakaduIncDir = "/isisData/kakadu"
 def macOSEnvHash = ""
 def macOSMinocondaBin = ""
 def macOSMinicondaDir = ""
+def condaPath = ""
 
 def isisEnv = [
     "ISIS3DATA=${isisDataPath}",
@@ -60,6 +61,11 @@ def setGitHubBuildStatus(status) {
 
 
 node("${env.OS.toLowerCase()}") {
+    
+    environment {
+      PATH = "${-> condaPath}/bin:${env.PATH}"
+    }
+
     stage ("Checkout") {
         env.STAGE_STATUS = "Checking out ISIS"
         sh 'git config --global http.sslVerify false'
@@ -75,6 +81,7 @@ node("${env.OS.toLowerCase()}") {
           macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5 | tr -d "\n"', returnStdout: true)
           macOSMinicondaDir = "/tmp/$macOSEnvHash"
           macOSMinicondaBin = "$macOSMinicondaDir/bin"
+          condaPath = macOSMinicondaDir 
 
           println(macOSMinicondaDir)
           sh """
@@ -92,6 +99,7 @@ node("${env.OS.toLowerCase()}") {
             conda config --set ssl_verify false 
             """
         } else {
+         condaPath = "/var/jenkins_home/.conda"
          sh """
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
@@ -114,11 +122,7 @@ node("${env.OS.toLowerCase()}") {
             conda env update -n isis -f environment.yml --prune
           """
         }
-    }
-    
-    environment {
-      PATH = "${macOSMinocondaBin}:${env.PATH}"
-    }
+    }  
 
     withEnv(isisEnv) {
         dir("${env.ISISROOT}") {
@@ -148,7 +152,6 @@ node("${env.OS.toLowerCase()}") {
                         dir("${env.ISISROOT}") {
                             env.STAGE_STATUS = "Running unit tests on ${env.OS}"
                                 sh """
-                                    source activate isis
                                     echo $ISIS3TESTDATA
                                     echo $ISIS3DATA
 
@@ -178,7 +181,6 @@ node("${env.OS.toLowerCase()}") {
                     stage("AppTests") {
                         env.STAGE_STATUS = "Running app tests on ${env.OS}"
                         sh """
-                            source activate isis
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
@@ -207,7 +209,6 @@ node("${env.OS.toLowerCase()}") {
                     stage("ModuleTests") {
                         env.STAGE_STATUS = "Running module tests on ${env.OS}"
                         sh """
-                            source activate isis
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
@@ -236,7 +237,6 @@ node("${env.OS.toLowerCase()}") {
                     stage("GTests") {
                         env.STAGE_STATUS = "Running gtests on ${env.OS}"
                         sh """
-                            source activate isis
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
