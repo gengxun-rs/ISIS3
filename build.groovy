@@ -75,7 +75,7 @@ node("${env.OS.toLowerCase()}") {
           macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true)
           macOSMinicondaDir = "/tmp/" + macOSEnvHash
           macOSMinicondaBin = macOSMinicondaDir + "/bin"
-          macOSMinocondaDir.replaceAll("\\s","")
+          macOSMinicondaDir.replaceAll("\\s","")
           macOSMinicondaBin.replaceAll("\\s","")
 
           println(macOSMinicondaBin)
