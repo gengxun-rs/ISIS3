@@ -69,7 +69,7 @@ node("${env.OS.toLowerCase()}") {
             bash miniconda.sh -b -p ${condaPath}
             """
         } else {
-          condaPath = "/var/jenkins_home/.conda"
+          condaPath = "/home/jenkins/.conda/"
         } 
         
         println(condaPath)
@@ -109,7 +109,7 @@ node("${env.OS.toLowerCase()}") {
                         echo `ls ../`
                         echo `pwd`
                         conda list
-                        cmake -GNinja ${cmakeFlags.join(' ')} ../isis
+                        # cmake -GNinja ${cmakeFlags.join(' ')} ../isis
                         # ninja -j4 install
                     """
                 }
