@@ -73,7 +73,7 @@ node("${env.OS.toLowerCase()}") {
         } 
         
         println(condaPath)
-        isisEnv.add("PATH=${env.ISISROOT}/../install/bin:$condaPath/bin:${env.PATH}")
+        isisEnv.add("PATH=${pwd()}/install/bin:$condaPath/bin:${env.PATH}")
          
         sh """
             # Use the conda cache running on the Jenkins host
@@ -109,7 +109,7 @@ node("${env.OS.toLowerCase()}") {
                         echo `ls ../`
                         echo `pwd`
                         conda list
-                        # cmake -GNinja ${cmakeFlags.join(' ')} ../isis
+                        cmake -GNinja ${cmakeFlags.join(' ')} ../isis
                         # ninja -j4 install
                     """
                 }
