@@ -8,6 +8,8 @@ def isisTestDataPath = "/isisData/testData"
 
 def kakaduIncDir = "/isisData/kakadu"
 
+def macOSMinicondaDir = ""
+
 def isisEnv = [
     "ISIS3DATA=${isisDataPath}",
     "ISIS3TESTDATA=${isisTestDataPath}",
@@ -32,6 +34,7 @@ def getRepoUrl() {
 def getCommitSha() {
     return sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 }
+
 
 def setGitHubBuildStatus(status) {
     def repoUrl = getRepoUrl()
@@ -67,16 +70,17 @@ node("${env.OS.toLowerCase()}") {
         
         env.STAGE_STATUS = "Creating conda environment"
         if (env.OS.toLowerCase() == "mac") {
+          macOSMinicondaDir = "$TMP/" + sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true) + "/miniconda"
           sh '''
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p $WORKSPACE/miniconda
+            bash miniconda.sh -b -p ${macOsMinicondaDir}
           '''
         }
 
         sh '''
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH=$WORKSPACE/miniconda/bin:$PATH
+            export PATH=${MacOSMinicondaDir}:$PATH
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
@@ -127,7 +131,7 @@ node("${env.OS.toLowerCase()}") {
                                     export ISISROOT=${env.ISISROOT}
                                     export ISIS3TESTDATA="/isisData/testData"
                                     export ISIS3DATA="/isisData/data"
-                                    export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
+                                    export PATH=`pwd`/../install/bin:${macOSMinicondaDir}envs/isis/bin:$PATH
 
                                     automos -HELP
                                     catlab -HELP
@@ -158,7 +162,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -187,7 +191,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/env/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:$PATH
 
                             catlab -HELP
                             tabledump -HELP
@@ -216,7 +220,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:$WORKSPACE/miniconda/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:$PATH
 
                             ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
