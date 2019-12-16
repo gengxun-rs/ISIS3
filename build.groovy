@@ -113,7 +113,7 @@ node("${env.OS.toLowerCase()}") {
         """
         }
           
-        isisEnv.add("PATH=$ISISROOT/../install/bin:${condaPath}/bin:${env.PATH}")
+        isisEnv.add("PATH=${env.ISISROOT}/../install/bin:$condaPath/bin:${env.PATH}")
         
         if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
