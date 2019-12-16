@@ -81,21 +81,28 @@ node("${env.OS.toLowerCase()}") {
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             bash miniconda.sh -b -p ${macOSMinicondaDir}
             ls ${macOSMinicondaDir}
-          """
-        }
 
-        sh """
+            conda search -c conda-forge ale  
+            conda config --set always_yes True
+            conda config --set ssl_verify false 
+            conda create -n isis python=3
+
+          """
+        } else {
+         sh """
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
             export PATH="${macOSMinicondaBin}:${env.PATH}"
+            echo $PATH
             which conda
             conda search -c conda-forge ale  
             conda config --set always_yes True
             conda config --set ssl_verify false 
             conda create -n isis python=3
         """
+        }
 
-        if (env.OS.toLowerCase() == "centos") {
+               if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
         } else {
             sh 'conda env update -n isis -f environment.yml --prune'
