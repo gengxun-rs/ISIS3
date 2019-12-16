@@ -131,7 +131,7 @@ node("${env.OS.toLowerCase()}") {
                                     export ISISROOT=${env.ISISROOT}
                                     export ISIS3TESTDATA="/isisData/testData"
                                     export ISIS3DATA="/isisData/data"
-                                    export PATH=`pwd`/../install/bin:${macOSMinicondaDir}envs/isis/bin:${env.PATH}
+                                    export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}envs/isis/bin:${env.PATH}"
 
                                     automos -HELP
                                     catlab -HELP
@@ -162,7 +162,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}
+                            export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
 
                             catlab -HELP
                             tabledump -HELP
@@ -191,7 +191,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}
+                            export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
 
                             catlab -HELP
                             tabledump -HELP
@@ -220,7 +220,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}
+                            export PATH="`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
 
                             ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
