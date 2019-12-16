@@ -95,10 +95,10 @@ node("${env.OS.toLowerCase()}") {
             export PATH="${macOSMinicondaBin}:${env.PATH}"
             echo $PATH
             which conda
-            conda search -c conda-forge ale  
-            conda config --set always_yes True
-            conda config --set ssl_verify false 
-            conda create -n isis python=3
+            ${macOSMinicondaBin}/conda search -c conda-forge ale  
+            ${macOSMinicondaBin}/conda config --set always_yes True
+            ${macOSMinicondaBin}/conda config --set ssl_verify false 
+            ${macOSMinicondaBin}/conda create -n isis python=3
         """
         }
 
