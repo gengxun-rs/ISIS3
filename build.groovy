@@ -90,7 +90,6 @@ node("${env.OS.toLowerCase()}") {
             conda search -c conda-forge ale  
             conda config --set always_yes True
             conda config --set ssl_verify false 
-            conda create -n isis python=3
             """
         } else {
          sh """
@@ -111,6 +110,7 @@ node("${env.OS.toLowerCase()}") {
         } else {
           sh """
             export PATH="${macOSMinicondaBin}:${env.PATH}"
+            which conda
             conda env update -n isis -f environment.yml --prune
           """
         }
@@ -126,7 +126,7 @@ node("${env.OS.toLowerCase()}") {
                 stage ("Build") {
                     env.STAGE_STATUS = "Building ISIS on ${env.OS}"
                     sh """
-                        source activate ${macOSMinocondaDir}/envs/isis
+                        source activate ${macOSMinicondaDir}/envs/isis
                         echo `ls ../`
                         echo `pwd`
                         conda list
