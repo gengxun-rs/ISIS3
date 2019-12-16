@@ -14,9 +14,9 @@ def macOSMinicondaDir = ""
 def condaPath = ""
 
 def isisEnv = [
-    "ISIS3DATA=${isisDataPath}",
-    "ISIS3TESTDATA=${isisTestDataPath}",
-    "ISIS3MGRSCRIPTS=${isisMgrScripts}"
+    "ISIS3DATA=$isisDataPath",
+    "ISIS3TESTDATA=$isisTestDataPath",
+    "ISIS3MGRSCRIPTS=$isisMgrScripts",
 ]
 
 def cmakeFlags = [
@@ -60,12 +60,10 @@ def setGitHubBuildStatus(status) {
 }
 
 
-node("${env.OS.toLowerCase()}") {
-    
-    environment {
-      PATH = "${-> condaPath}/bin:${env.PATH}"
-    }
+environment {
+}
 
+node("${env.OS.toLowerCase()}") {
     stage ("Checkout") {
         env.STAGE_STATUS = "Checking out ISIS"
         sh 'git config --global http.sslVerify false'
@@ -77,12 +75,14 @@ node("${env.OS.toLowerCase()}") {
     stage("Create environment") {
         
         env.STAGE_STATUS = "Creating conda environment"
+        
         if (env.OS.toLowerCase() == "mac") {
-          macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5 | tr -d "\n"', returnStdout: true)
+          macOSEnvHash = sh(script: '{ date "+%H:%M:%S:%m"; echo $WORKSPACE; } | md5 | tr -d "\n";', returnStdout: true)
           macOSMinicondaDir = "/tmp/$macOSEnvHash"
           macOSMinicondaBin = "$macOSMinicondaDir/bin"
           condaPath = macOSMinicondaDir 
 
+          
           println(macOSMinicondaDir)
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
@@ -112,7 +112,9 @@ node("${env.OS.toLowerCase()}") {
             conda create -n isis python=3
         """
         }
-
+          
+        isisEnv.add("PATH=$ISISROOT/../install/bin:${condaPath}/bin:${env.PATH}")
+        
         if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
         } else {
@@ -154,17 +156,6 @@ node("${env.OS.toLowerCase()}") {
                                 sh """
                                     echo $ISIS3TESTDATA
                                     echo $ISIS3DATA
-
-                                    # environment variables
-                                    export ISISROOT=${env.ISISROOT}
-                                    export ISIS3TESTDATA="/isisData/testData"
-                                    export ISIS3DATA="/isisData/data"
-                                    export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
-
-                                    automos -HELP
-                                    catlab -HELP
-                                    tabledump -HELP
-
                                     ctest -R _unit_ -j4 -VV
                                 """
 
@@ -184,16 +175,6 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-
-                            # environment variables
-                            export ISISROOT=${env.ISISROOT}
-                            export ISIS3TESTDATA="/isisData/testData"
-                            export ISIS3DATA='/isisData/data'
-                            export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
-
-                            catlab -HELP
-                            tabledump -HELP
-
                             ctest -R _app_ -j4 -VV
                         """
                     }
@@ -212,16 +193,6 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-
-                            # environment variables
-                            export ISISROOT=${env.ISISROOT}
-                            export ISIS3TESTDATA="/isisData/testData"
-                            export ISIS3DATA='/isisData/data'
-                            export "PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
-
-                            catlab -HELP
-                            tabledump -HELP
-
                             ctest -R _module_ -j4 -VV
                         """
                     }
@@ -240,13 +211,6 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-
-                            # environment variables
-                            export ISISROOT=${env.ISISROOT}
-                            export ISIS3TESTDATA="/isisData/testData"
-                            export ISIS3DATA='/isisData/data'
-                            export PATH="`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${env.PATH}"
-
                             ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
                     }
@@ -275,9 +239,5 @@ node("${env.OS.toLowerCase()}") {
 
     stage("Clean Up") {
       env.STAGE_STATUS = "Removing conda environment"
-      sh '''
-          source deactivate
-          conda env remove --name isis
-      '''
     }
 }
