@@ -1,27 +1,16 @@
 // vim: ft=groovy
 
-def isisDataPath = '/isisData/data'
-
-def isisMgrScripts = '/isisData/data/isis3mgr_scripts'
-
-def isisTestDataPath = "/isisData/testData"
-
-def kakaduIncDir = "/isisData/kakadu"
-
-def macOSEnvHash = ""
-def macOSMinocondaBin = ""
-def macOSMinicondaDir = ""
 def condaPath = ""
 
 def isisEnv = [
-    "ISIS3DATA=$isisDataPath",
-    "ISIS3TESTDATA=$isisTestDataPath",
-    "ISIS3MGRSCRIPTS=$isisMgrScripts",
+    "ISIS3DATA=/isisData/data",
+    "ISIS3TESTDATA=/isisData/testData",
+    "ISIS3MGRSCRIPTS=/isisData/data/isis3mgr_scripts",
 ]
 
 def cmakeFlags = [
     "-DJP2KFLAG=ON",
-    "-DKAKADU_INCLUDE_DIR=${kakaduIncDir}",
+    "-DKAKADU_INCLUDE_DIR=/isisData/kakadu",
     "-Dpybindings=OFF",
     "-DCMAKE_BUILD_TYPE=RELEASE"
 ]
@@ -59,10 +48,6 @@ def setGitHubBuildStatus(status) {
     ])
 }
 
-
-environment {
-}
-
 node("${env.OS.toLowerCase()}") {
     stage ("Checkout") {
         env.STAGE_STATUS = "Checking out ISIS"
@@ -77,33 +62,23 @@ node("${env.OS.toLowerCase()}") {
         env.STAGE_STATUS = "Creating conda environment"
         
         if (env.OS.toLowerCase() == "mac") {
-          macOSEnvHash = sh(script: '{ date "+%H:%M:%S:%m"; echo $WORKSPACE; } | md5 | tr -d "\n";', returnStdout: true)
-          macOSMinicondaDir = "/tmp/$macOSEnvHash"
-          macOSMinicondaBin = "$macOSMinicondaDir/bin"
-          condaPath = macOSMinicondaDir 
+          condaPath = "/tmp/" + sh(script: '{ date "+%H:%M:%S:%m"; echo $WORKSPACE; } | md5 | tr -d "\n";', returnStdout: true) 
 
-          
-          println(macOSMinicondaDir)
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-            bash miniconda.sh -b -p ${macOSMinicondaDir}
-            ls ${macOSMinicondaDir}
-            
-            # Use the conda cache running on the Jenkins host
-            # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH="${macOSMinicondaBin}:${env.PATH}"
-            echo $PATH
-            which conda
-            conda search -c conda-forge ale  
-            conda config --set always_yes True
-            conda config --set ssl_verify false 
+            bash miniconda.sh -b -p ${condaPath}
             """
         } else {
-         condaPath = "/var/jenkins_home/.conda"
-         sh """
+          condaPath = "/var/jenkins_home/.conda"
+        } 
+        
+        println(condaPath)
+        isisEnv.add("PATH=${env.ISISROOT}/../install/bin:$condaPath/bin:${env.PATH}")
+         
+        sh """
             # Use the conda cache running on the Jenkins host
             # conda config --set channel_alias http://dmz-jenkins.wr.usgs.gov
-            export PATH="${macOSMinicondaBin}:${env.PATH}"
+            export PATH="${condaPath}/bin:${env.PATH}"
             echo $PATH
             which conda
             conda search -c conda-forge ale  
@@ -111,15 +86,13 @@ node("${env.OS.toLowerCase()}") {
             conda config --set ssl_verify false 
             conda create -n isis python=3
         """
-        }
           
-        isisEnv.add("PATH=${env.ISISROOT}/../install/bin:$condaPath/bin:${env.PATH}")
         
         if (env.OS.toLowerCase() == "centos") {
             sh 'conda env update -n isis -f environment_gcc4.yml --prune'
         } else {
           sh """
-            export PATH="${macOSMinicondaBin}:${env.PATH}"
+            export PATH="${condaPath}/bin:${env.PATH}"
             which conda
             conda env update -n isis -f environment.yml --prune
           """
@@ -132,12 +105,12 @@ node("${env.OS.toLowerCase()}") {
                 stage ("Build") {
                     env.STAGE_STATUS = "Building ISIS on ${env.OS}"
                     sh """
-                        source activate ${macOSMinicondaDir}/envs/isis
+                        source activate ${condaPath}/envs/isis
                         echo `ls ../`
                         echo `pwd`
                         conda list
                         cmake -GNinja ${cmakeFlags.join(' ')} ../isis
-                        ninja -j4 install
+                        # ninja -j4 install
                     """
                 }
             }
@@ -156,7 +129,9 @@ node("${env.OS.toLowerCase()}") {
                                 sh """
                                     echo $ISIS3TESTDATA
                                     echo $ISIS3DATA
-                                    ctest -R _unit_ -j4 -VV
+                                    echo $PATH
+                                    which ctest
+                                    # ctest -R _unit_ -j4 -VV
                                 """
 
                         }
@@ -175,7 +150,8 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-                            ctest -R _app_ -j4 -VV
+                            which ctest
+                            # ctest -R _app_ -j4 -VV
                         """
                     }
                 }
@@ -193,7 +169,8 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-                            ctest -R _module_ -j4 -VV
+                            which ctest
+                            # ctest -R _module_ -j4 -VV
                         """
                     }
                 }
@@ -211,7 +188,8 @@ node("${env.OS.toLowerCase()}") {
                             echo $ISIS3TESTDATA
                             echo $ISIS3DATA
                             echo $PATH
-                            ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
+                            which ctest
+                            # ctest -R "." -E "(_app_|_unit_|_module_)" -j4 -VV
                         """
                     }
                 }
