@@ -162,7 +162,7 @@ node("${env.OS.toLowerCase()}") {
                             export ISISROOT=${env.ISISROOT}
                             export ISIS3TESTDATA="/isisData/testData"
                             export ISIS3DATA='/isisData/data'
-                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:$PATH
+                            export PATH=`pwd`/../install/bin:${macOSMinicondaDir}/envs/isis/bin:${PATH}
 
                             catlab -HELP
                             tabledump -HELP
