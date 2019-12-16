@@ -73,12 +73,11 @@ node("${env.OS.toLowerCase()}") {
         env.STAGE_STATUS = "Creating conda environment"
         if (env.OS.toLowerCase() == "mac") {
           macOSEnvHash = sh(script: 'date "+%H:%M:%S:%m" | md5', returnStdout: true)
-          macOSMinicondaDir = "/tmp/" + macOSEnvHash
-          macOSMinicondaBin = macOSMinicondaDir + "/bin"
-          macOSMinicondaDir.replaceAll("\\s","")
-          macOSMinicondaBin.replaceAll("\\s","")
+          macOSMinicondaDir = "/tmp/$macOSEnvHash"
+          macOSMinicondaBin = "$macOSMinicondaDir/bin"
 
           println(macOSMinicondaBin)
+          println(macOSMinicondaDir)
           sh """
             curl -o miniconda.sh  https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             bash miniconda.sh -b -p ${macOSMinicondaDir}
