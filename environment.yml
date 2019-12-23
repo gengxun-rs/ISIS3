@@ -2,6 +2,7 @@ channels:
   - conda-forge/label/gcc7
   - conda-forge
   - usgs-astrogeology
+  - defaults 
 
 dependencies:
   - ale >=0.7.1
