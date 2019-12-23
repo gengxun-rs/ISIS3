@@ -93,6 +93,7 @@ node("${env.OS.toLowerCase()}") {
               sh 'conda env update -n isis -f environment_gcc4.yml --prune'
           } else {
             sh """
+                conda config --remove channels defaults
                 conda config --show channels
                 conda env create -n isis -f environment.yml
             """
